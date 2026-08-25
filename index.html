@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --page:#FAFAF8;--white:#FFFFFF;--text:#0E0E0D;--muted:#5C5C5A;--faint:#9A9A96;
+  --border:#E5E3DE;--border-strong:#C8C6C0;--dark:#0D1117;--dark-card:#161B22;--dark-border:#21262D;
+  --blue:#1B6B93;--blue-bg:#EEF5FA;--green:#22C55E;--amber:#C9A227;--red:#DC2626;
+  --mono:'JetBrains Mono','Courier New',monospace;--sans:-apple-system,'Inter',system-ui,sans-serif
+}
+body{font-family:var(--sans);background:var(--page);color:var(--text);line-height:1.6;font-size:15px}
+.m{font-family:var(--mono)}
+nav{background:rgba(250,250,248,0.96);border-bottom:0.5px solid var(--border);padding:0 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;height:52px}
+.n-id{font-family:var(--mono);font-size:11px;color:var(--blue);letter-spacing:0.1em;font-weight:500}
+.n-links{display:flex;gap:4px}
+.n-btn{font-size:12px;color:var(--muted);cursor:pointer;padding:5px 12px;border-radius:6px;border:none;background:transparent;font-family:var(--sans);transition:background 0.15s,color 0.15s}
+.n-btn:hover,.n-btn.active{background:#EEF5FA;color:var(--blue)}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;color:var(--blue);letter-spacing:0.1em;margin-bottom:28px;padding:4px 0}
+.hero-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.btn-p{background:var(--blue);color:#fff;border:none;border-radius:6px;padding:10px 22px;font-size:13px;cursor:pointer;font-weight:500}
+.btn-o{background:transparent;color:var(--text);border:0.5px solid var(--border-strong);border-radius:6px;padding:10px 22px;font-size:13px;cursor:pointer}
+.thin-rule{width:24px;height:1.5px;background:var(--blue);border:none;margin-bottom:18px}
+.eyebrow{font-family:var(--mono);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--blue);margin-bottom:8px}
+.eyebrow-dark{font-family:var(--mono);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--blue);margin-bottom:8px}
+.sec-h{font-size:24px;font-weight:400;color:var(--text);margin-bottom:6px;letter-spacing:-0.01em}
+.sec-h-dark{font-size:24px;font-weight:400;color:#fff;margin-bottom:6px;letter-spacing:-0.01em}
+.sec-body{font-size:14px;color:var(--muted);line-height:1.75;max-width:560px;margin-bottom:4px}
+.sec-body-dark{font-size:14px;color:#9CA3AF;line-height:1.75;max-width:560px;margin-bottom:4px}
+.warn{font-family:var(--mono);font-size:9px;color:var(--amber);border:0.5px solid var(--amber);border-radius:3px;padding:3px 10px;display:inline-block;letter-spacing:0.06em;background:rgba(201,162,39,0.05)}
+.divider{border:none;border-top:0.5px solid var(--border);margin:0}
+.spec-table{border:0.5px solid var(--border);border-radius:8px;overflow:hidden;background:var(--white)}
+.spec-row{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;border-bottom:0.5px solid var(--border);gap:16px}
+.spec-row:last-child{border-bottom:none}
+.spec-key{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:0.06em;min-width:160px}
+.spec-val{font-size:13px;color:var(--text);text-align:right}
+.glance-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:0.5px solid var(--border);border-radius:8px;overflow:hidden}
+.gi{background:var(--white);padding:16px 18px}
+.gi-k{font-family:var(--mono);font-size:9px;color:var(--faint);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px}
+.gi-v{font-size:13px;color:var(--text);margin-bottom:3px}
+.gi-s{font-family:var(--mono);font-size:9px}
+.status-table{border:0.5px solid var(--border);border-radius:8px;overflow:hidden;background:var(--white)}
+.si{display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:0.5px solid var(--border)}
+.si:last-child{border-bottom:none}
+.si-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.si-name{font-size:13px;flex:1}
+.si-badge{font-family:var(--mono);font-size:9px;letter-spacing:0.06em}
+.log-entry{border:0.5px solid var(--border);border-radius:8px;background:var(--white);margin-bottom:12px;overflow:hidden}
+.le-header{display:flex;align-items:center;gap:20px;padding:14px 20px;border-bottom:0.5px solid var(--border);background:var(--page)}
+.le-id{font-family:var(--mono);font-size:10px;color:var(--blue);letter-spacing:0.08em;min-width:70px}
+.le-title{font-size:14px;font-weight:500;color:var(--text)}
+.le-status{font-family:var(--mono);font-size:9px;letter-spacing:0.06em;padding:3px 8px;border-radius:3px;margin-left:auto;white-space:nowrap}
+.le-body{display:grid;grid-template-columns:1fr 1fr}
+.le-cell{padding:14px 20px;border-right:0.5px solid var(--border);border-bottom:0.5px solid var(--border)}
+.le-cell:nth-child(2n){border-right:none}
+.le-cell:last-child{border-bottom:none;grid-column:span 2;border-right:none}
+.le-label{font-family:var(--mono);font-size:9px;color:var(--faint);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px}
+.le-text{font-size:13px;color:var(--muted);line-height:1.6}
+.state-row{display:flex;gap:14px;align-items:stretch}
+.state-left{display:flex;flex-direction:column;align-items:center;width:34px;flex-shrink:0}
+.state-n{width:34px;height:34px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:9px;color:#fff;font-weight:600;cursor:pointer;border:2px solid var(--blue);transition:0.2s;flex-shrink:0}
+.state-n:hover,.state-n.open{background:#155A7A;border-color:#7EC8E3}
+.state-vline{width:1px;flex-grow:1;background:var(--dark-border);margin:4px 0}
+.state-card{flex:1;background:var(--dark-card);border:0.5px solid var(--dark-border);border-radius:8px;margin-bottom:8px;cursor:pointer;transition:border-color 0.2s;overflow:hidden}
+.state-card:hover{border-color:var(--blue)}
+.state-card.open{border-color:#7EC8E3}
+.sc-head{padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sc-name{font-size:14px;font-weight:500;color:#fff}
+.sc-desc{font-size:12px;color:#6B7280}
+.sc-chev{font-size:12px;color:#374151;transition:transform 0.2s;flex-shrink:0}
+.state-card.open .sc-chev{transform:rotate(180deg);color:var(--blue)}
+.sc-detail{display:none;border-top:0.5px solid var(--dark-border);padding:14px 16px;grid-template-columns:1fr 1fr;gap:10px}
+.state-card.open .sc-detail{display:grid}
+.scd-block{background:#0D1117;border-radius:6px;padding:10px 12px}
+.scd-k{font-family:var(--mono);font-size:9px;color:var(--blue);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px}
+.scd-v{font-size:12px;color:#D1D5DB;line-height:1.55}
+.d-inputs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.d-inp{background:#0D1117;border:0.5px solid var(--dark-border);border-radius:6px;padding:14px 12px;text-align:center}
+.d-inp-code{font-family:var(--mono);font-size:12px;color:#7EC8E3;font-weight:600;margin-bottom:6px;letter-spacing:0.06em}
+.d-inp-label{font-family:var(--mono);font-size:9px;color:var(--blue);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px}
+.d-inp-val{font-size:11px;color:#9CA3AF}
+.d-arrow{text-align:center;color:#374151;font-size:16px;margin:8px 0;font-family:var(--mono)}
+.d-model{background:#1B3A4B;border:0.5px solid var(--blue);border-radius:6px;padding:14px 18px;text-align:center;margin-bottom:12px}
+.d-model-label{font-family:var(--mono);font-size:9px;color:var(--blue);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px}
+.d-model-eq{font-family:var(--mono);font-size:12px;color:#7EC8E3}
+.d-outputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.d-out{background:#0A2510;border:0.5px solid var(--green);border-radius:6px;padding:12px 14px;text-align:center}
+.d-out-label{font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px}
+.d-out-val{font-size:13px;color:#86EFAC}
+.pipe-flow{display:flex;flex-direction:column;gap:0}
+.pipe-step{display:flex;gap:14px;align-items:stretch}
+.pipe-left{display:flex;flex-direction:column;align-items:center;width:28px;flex-shrink:0}
+.pipe-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--blue);background:var(--blue-bg);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:9px;color:var(--blue);font-weight:700;flex-shrink:0;z-index:1}
+.pipe-vline{width:1px;flex-grow:1;background:var(--border);margin:4px 0}
+.pipe-card{flex:1;border:0.5px solid var(--border);border-radius:6px;background:var(--white);padding:11px 14px;margin-bottom:8px}
+.pipe-card.hl{background:#FFF9E6;border-color:#FDE68A}
+.pc-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
+.pc-sub{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.val-report{border:0.5px solid var(--dark-border);border-radius:8px;overflow:hidden;background:var(--dark-card);margin-bottom:12px}
+.vr-header{background:#0D1117;border-bottom:0.5px solid var(--dark-border);padding:14px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.vr-id{font-family:var(--mono);font-size:10px;color:var(--blue);letter-spacing:0.08em}
+.vr-title{font-size:14px;font-weight:500;color:#fff}
+.vr-status{font-family:var(--mono);font-size:9px;padding:3px 9px;border-radius:3px;letter-spacing:0.06em;margin-left:auto}
+.vr-body{display:grid;grid-template-columns:1fr 1fr 1fr}
+.vr-cell{padding:14px 20px;border-right:0.5px solid var(--dark-border)}
+.vr-cell:last-child{border-right:none}
+.vr-cell-k{font-family:var(--mono);font-size:9px;color:#6B7280;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px}
+.vr-cell-v{font-size:12px;color:#D1D5DB;line-height:1.5}
+.img-placeholder{margin:0 20px 20px;border:0.5px solid var(--dark-border);border-radius:6px;height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:#0D1117}
+.img-placeholder-label{font-family:var(--mono);font-size:10px;color:#374151;letter-spacing:0.08em;text-transform:uppercase}
+.img-placeholder-sub{font-family:var(--mono);font-size:9px;color:#21262D;letter-spacing:0.06em}
+.chal-entry{display:flex;gap:24px;padding:20px 0;border-bottom:0.5px solid var(--border);align-items:start}
+.chal-entry:last-child{border-bottom:none}
+.chal-num{font-family:var(--mono);font-size:11px;color:var(--blue);font-weight:600;min-width:28px;margin-top:2px}
+.rm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rm-item{display:flex;align-items:center;gap:14px;background:var(--white);border:0.5px solid var(--border);border-radius:6px;padding:12px 16px}
+.rm-n{font-family:var(--mono);font-size:10px;font-weight:600;min-width:24px}
+.rm-name{font-size:13px;flex:1}
+.rm-badge{font-family:var(--mono);font-size:8px;padding:3px 8px;border-radius:3px;letter-spacing:0.06em;white-space:nowrap}
+.about-cols{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.skill-list{display:flex;flex-wrap:wrap;gap:7px}
+.skill-tag{font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:4px;background:var(--blue-bg);color:var(--blue);border:0.5px solid #C2DCE8}
+.i-row{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.i-dot{width:3px;height:3px;border-radius:50%;background:var(--blue);flex-shrink:0}
+.i-text{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<h2 style="position:absolute;width:1px;height:1px;clip:rect(0,0,0,0);overflow:hidden">Hamza Fayed — aerospace engineering portfolio</h2>
+
+<nav>
+  <span class="n-id">HF — AEROSPACE ENG.</span>
+  <div class="n-links">
+    <button class="n-btn active" data-s="overview">Overview</button>
+    <button class="n-btn" data-s="devlog">Dev Log</button>
+    <button class="n-btn" data-s="autonomy">Autonomy</button>
+    <button class="n-btn" data-s="perception">Perception</button>
+    <button class="n-btn" data-s="validation">Validation</button>
+    <button class="n-btn" data-s="aircraft">Aircraft</button>
+    <button class="n-btn" data-s="roadmap">Roadmap</button>
+    <button class="n-btn" data-s="about">About</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div id="sec-overview" style="background:var(--white);border-bottom:0.5px solid var(--border)">
+  <div style="max-width:1000px;margin:0 auto;padding:72px 40px 52px;display:grid;grid-template-columns:1fr 360px;gap:56px;align-items:start">
+    <div>
+      <div class="hero-tag"><span class="hero-dot"></span><span style="font-family:var(--mono);font-size:10px;letter-spacing:0.1em;color:var(--blue)">IN ACTIVE DEVELOPMENT</span></div>
+      <h1 style="font-size:52px;font-weight:400;letter-spacing:-0.03em;margin-bottom:6px;line-height:1.0">Hamza Fayed</h1>
+      <p style="font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:0.1em;margin-bottom:28px;line-height:2.2">AEROSPACE ENGINEERING &nbsp;/&nbsp; AUTONOMOUS AIRCRAFT &nbsp;/&nbsp; UAV SYSTEMS</p>
+      <p style="font-size:17px;color:var(--text);line-height:1.65;max-width:480px;margin-bottom:10px">I design and build autonomous aircraft systems from the software up.</p>
+      <p style="font-size:14px;color:var(--muted);line-height:1.7;max-width:460px;margin-bottom:32px">Currently developing the autonomy architecture and aircraft systems for a future scratch-built twin-tiltrotor VTOL UAV designed for autonomous maritime search and rescue.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn-p">View project</button>
+        <button class="btn-o">GitHub</button>
+        <button class="btn-o">Resume</button>
+      </div>
+    </div>
+    <div style="background:var(--page);border:0.5px solid var(--border);border-radius:8px;padding:20px">
+      <!-- Airframe image placeholder — no emoji -->
+      <div style="background:var(--white);border:0.5px solid var(--border);border-radius:6px;height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;margin-bottom:16px">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--border-strong);letter-spacing:0.1em;text-transform:uppercase">Airframe concept</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:0.08em">CAD in progress</span>
+      </div>
+      <p style="font-family:var(--mono);font-size:9px;color:var(--faint);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">Project — 01</p>
+      <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px">SAR Tiltrotor UAV</p>
+      <p style="font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.8">Autonomous Maritime Search & Rescue<br>Early Development · Independent Project</p>
+      <div style="display:flex;gap:7px;margin-top:14px;flex-wrap:wrap">
+        <span style="font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:3px;background:var(--blue-bg);color:var(--blue);letter-spacing:0.06em">autonomy</span>
+        <span style="font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:3px;background:var(--blue-bg);color:var(--blue);letter-spacing:0.06em">simulation</span>
+        <span style="font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:3px;background:var(--blue-bg);color:var(--blue);letter-spacing:0.06em">perception</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spec strip -->
+  <div style="border-top:0.5px solid var(--border);background:var(--page)">
+    <div style="max-width:1000px;margin:0 auto;padding:16px 40px;display:flex;gap:36px;overflow-x:auto" id="specstrip"></div>
+  </div>
+
+  <!-- The Project -->
+  <div style="border-top:0.5px solid var(--border);background:var(--white)">
+    <div style="max-width:1000px;margin:0 auto;padding:40px 40px 36px">
+      <p class="eyebrow">The project</p>
+      <p style="font-size:16px;color:var(--text);line-height:1.75;max-width:680px;margin-bottom:10px">Maritime search and rescue presents a systems problem: an autonomous aircraft must search a large area, identify a person in uncertain conditions, estimate a drifting target's location, execute a safe approach, deliver a flotation payload, and return.</p>
+      <p style="font-size:14px;color:var(--muted);line-height:1.75;max-width:640px">My approach is to develop the autonomy and perception architecture first in simulation, establish system requirements, and progressively translate those requirements into the physical aircraft.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Glance + Status -->
+<hr class="divider">
+<div style="background:var(--page);padding:48px 0">
+  <div style="max-width:1000px;margin:0 auto;padding:0 40px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px">
+      <div>
+        <p class="eyebrow">System at a glance</p>
+        <div class="glance-grid" id="glance"></div>
+        <p style="font-family:var(--mono);font-size:9px;color:var(--amber);margin-top:8px;letter-spacing:0.06em">intended architecture — not yet physically integrated</p>
+      </div>
+      <div>
+        <p class="eyebrow">Development status</p>
+        <div class="status-table" id="statusgrid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Currently Building -->
+<hr class="divider">
+<div style="background:#0D1117;padding:44px 0">
+  <div style="max-width:1000px;margin:0 auto;padding:0 40px">
+    <p style="font-family:var(--mono);font-size:9px;color:#22C55E;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:18px">currently building</p>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px" id="building"></div>
+  </div>
+</div>
+
+<!-- DEV LOG -->
+<hr class="divider">
+<div id="sec-devlog">
+  <div style="max-width:1000px;margin:0 auto;padding:60px 40px">
+    <p class="eyebrow">Engineering development log</p>
+    <h2 class="sec-h">Technical development record</h2>
+    <p class="sec-body" style="margin-bottom:32px">Engineering evidence for work completed, in progress, and planned. Each entry represents a discrete development task.</p>
+    <hr class="thin-rule">
+    <div id="devlog"></div>
+  </div>
+</div>
+
+<!-- AUTONOMY (dark) -->
+<div style="background:var(--dark)" id="sec-autonomy">
+  <div style="max-width:1000px;margin:0 auto;padding:64px 40px">
+    <p class="eyebrow-dark">Autonomous mission architecture</p>
+    <h2 class="sec-h-dark" style="font-size:26px;margin-bottom:6px">Eight-state mission system</h2>
+    <p class="sec-body-dark" style="margin-bottom:8px">Developing a mission brain for autonomous maritime search and rescue. Click any state to reveal implementation detail.</p>
+    <div class="warn" style="margin-bottom:28px">all transitions validated in ArduPilot QuadPlane SITL — not physical flight</div>
+    <hr class="thin-rule">
+    <div id="states"></div>
+
+    <!-- Drift -->
+    <div style="margin-top:56px">
+      <p class="eyebrow-dark">Drift prediction</p>
+      <h2 class="sec-h-dark">Moving target estimation</h2>
+      <p class="sec-body-dark" style="margin-bottom:6px">The system corrects for victim drift — wind and current move a person in water between signal and arrival.</p>
+      <div class="warn" style="margin-bottom:20px">concept implementation — not validated against real maritime data</div>
+      <hr class="thin-rule">
+      <div style="background:var(--dark-card);border:0.5px solid var(--dark-border);border-radius:8px;padding:24px">
+        <div class="d-inputs">
+          <div class="d-inp"><div class="d-inp-code">GPS</div><div class="d-inp-label">Last known position</div><div class="d-inp-val">Distress coordinates</div></div>
+          <div class="d-inp"><div class="d-inp-code">WND</div><div class="d-inp-label">Wind vector</div><div class="d-inp-val">Speed + direction</div></div>
+          <div class="d-inp"><div class="d-inp-code">CUR</div><div class="d-inp-label">Current vector</div><div class="d-inp-val">Speed + direction</div></div>
+          <div class="d-inp"><div class="d-inp-code">dt</div><div class="d-inp-label">Transit time</div><div class="d-inp-val">Dispatch to arrival</div></div>
+        </div>
+        <div class="d-arrow">|</div>
+        <div class="d-model">
+          <div class="d-model-label">Leeway drift model</div>
+          <div class="d-model-eq">predicted_pos = last_known + (leeway_fraction x wind + current) x dt</div>
+        </div>
+        <div class="d-arrow">|</div>
+        <div class="d-outputs">
+          <div class="d-out"><div class="d-out-label">Predicted victim position</div><div class="d-out-val">Updated GPS estimate</div></div>
+          <div class="d-out"><div class="d-out-label">Search centre</div><div class="d-out-val">Mission waypoint</div></div>
+        </div>
+        <p style="font-family:var(--mono);font-size:9px;color:#4B5563;margin-top:14px;text-align:center;letter-spacing:0.04em">accounts for victim movement during transit rather than navigating to a static point</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PERCEPTION -->
+<div id="sec-perception">
+  <div style="max-width:1000px;margin:0 auto;padding:64px 40px">
+    <p class="eyebrow">Perception pipeline</p>
+    <h2 class="sec-h">Person-in-water detection</h2>
+    <p class="sec-body" style="margin-bottom:4px">Model: YOLOv11n &nbsp;·&nbsp; Dataset: SeaDronesSee &nbsp;·&nbsp; Training images: 8,930 &nbsp;·&nbsp; Validation metrics: in progress</p>
+    <div class="warn" style="margin-bottom:28px">software implementation — physical sensor integration is a future phase</div>
+    <hr class="thin-rule">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start">
+      <div class="pipe-flow" id="pipeline"></div>
+      <div>
+        <div class="spec-table" style="margin-bottom:20px">
+          <div class="spec-row" style="background:var(--blue-bg)"><span class="spec-key">Dataset</span><span class="spec-val">SeaDronesSee</span></div>
+          <div class="spec-row"><span class="spec-key">Training images</span><span class="spec-val">8,930</span></div>
+          <div class="spec-row"><span class="spec-key">Model</span><span class="spec-val">YOLOv11n</span></div>
+          <div class="spec-row"><span class="spec-key">Persistence filter</span><span class="spec-val">4 consecutive frames</span></div>
+          <div class="spec-row"><span class="spec-key">Optical</span><span class="spec-val">RGB camera</span></div>
+          <div class="spec-row"><span class="spec-key">Thermal</span><span class="spec-val">FLIR Lepton 3.5</span></div>
+          <div class="spec-row"><span class="spec-key">Validation metrics</span><span style="font-family:var(--mono);font-size:10px;color:var(--amber)">in progress</span></div>
+        </div>
+        <div style="background:var(--page);border:0.5px solid var(--border);border-radius:6px;padding:16px 18px">
+          <p style="font-family:var(--mono);font-size:9px;color:var(--faint);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px">Failure to iteration</p>
+          <div style="border-left:2px solid var(--amber);padding-left:12px;margin-bottom:10px">
+            <p style="font-family:var(--mono);font-size:9px;color:var(--amber);letter-spacing:0.06em;margin-bottom:3px">failure mode</p>
+            <p style="font-size:12px;color:var(--text)">Transient false detections from waves or glare</p>
+          </div>
+          <div style="border-left:2px solid var(--blue);padding-left:12px">
+            <p style="font-family:var(--mono);font-size:9px;color:var(--blue);letter-spacing:0.06em;margin-bottom:3px">response</p>
+            <p style="font-size:12px;color:var(--muted)">Four-frame persistence filter — validation requires N consecutive detections above threshold</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VALIDATION (dark) -->
+<div style="background:var(--dark)" id="sec-validation">
+  <div style="max-width:1000px;margin:0 auto;padding:64px 40px">
+    <p class="eyebrow-dark">Simulation & validation</p>
+    <h2 class="sec-h-dark">Test and development reports</h2>
+    <p class="sec-body-dark" style="margin-bottom:8px">The autonomy workflow has been validated end-to-end in ArduPilot QuadPlane SITL. Test reports document the validation state of each subsystem.</p>
+    <div class="warn" style="margin-bottom:28px">validated in simulation — not physical flight testing</div>
+    <hr class="thin-rule">
+    <div id="valreports"></div>
+  </div>
+</div>
+
+<!-- AIRCRAFT (light) -->
+<div id="sec-aircraft">
+  <div style="max-width:1000px;margin:0 auto;padding:64px 40px">
+    <p class="eyebrow">Aircraft concept & system requirements</p>
+    <h2 class="sec-h">Initial design parameters</h2>
+    <div class="warn" style="margin-bottom:28px">design targets — physical aircraft not yet fabricated or CAD-complete</div>
+    <hr class="thin-rule">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <!-- CAD placeholder — clean, no emoji -->
+        <div style="background:var(--page);border:0.5px solid var(--border);border-radius:8px;min-height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
+          <span style="font-family:var(--mono);font-size:10px;color:var(--border-strong);letter-spacing:0.1em;text-transform:uppercase">Airframe CAD</span>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:0.08em">In progress — coming soon</span>
+        </div>
+        <div style="background:var(--page);border:0.5px solid var(--border);border-radius:8px;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
+          <span style="font-family:var(--mono);font-size:10px;color:var(--border-strong);letter-spacing:0.1em;text-transform:uppercase">Tilt mechanism CAD</span>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:0.08em">In progress — coming soon</span>
+        </div>
+        <div style="background:var(--page);border:0.5px solid var(--border);border-radius:6px;padding:12px 16px">
+          <p style="font-family:var(--mono);font-size:9px;color:var(--faint);letter-spacing:0.08em;margin-bottom:4px">Initial tilt mechanism concept</p>
+          <p style="font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.9">270 deg servo  3:1 herringbone reduction  Delrin sector gear  0-95 deg tilt</p>
+        </div>
+      </div>
+      <div class="spec-table" id="aircraftspecs"></div>
+    </div>
+
+    <!-- Engineering Challenges -->
+    <div style="margin-top:56px">
+      <p class="eyebrow">Engineering challenges</p>
+      <h2 class="sec-h">Problem — approach — status</h2>
+      <hr class="thin-rule">
+      <div id="challenges"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ROADMAP -->
+<div id="sec-roadmap" style="background:var(--page);border-top:0.5px solid var(--border)">
+  <div style="max-width:1000px;margin:0 auto;padding:64px 40px">
+    <p class="eyebrow">Roadmap</p>
+    <h2 class="sec-h">Development phases</h2>
+    <hr class="thin-rule">
+    <div class="rm-grid" id="roadmap"></div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div id="sec-about" style="border-top:0.5px solid var(--border);background:var(--white)">
+  <div style="max-width:1000px;margin:0 auto;padding:64px 40px">
+    <div class="about-cols">
+      <div>
+        <p class="eyebrow">About</p>
+        <h2 class="sec-h" style="margin-bottom:14px">Hamza Fayed</h2>
+        <p class="sec-body" style="margin-bottom:12px">Aerospace engineering student at Las Positas Community College (GPA 3.7+). Founded and led a 3-year aeronautics organization. Building autonomous aircraft systems independently.</p>
+        <p class="sec-body" style="margin-bottom:20px">I approach engineering through the complete development cycle — from mission requirements through simulation validation — before committing to physical hardware.</p>
+        <div class="skill-list">
+          <span class="skill-tag">Python</span><span class="skill-tag">C++</span><span class="skill-tag">MAVSDK</span><span class="skill-tag">ArduPilot</span><span class="skill-tag">Fusion 360</span><span class="skill-tag">Onshape</span><span class="skill-tag">YOLOv11</span><span class="skill-tag">PyTorch</span><span class="skill-tag">SITL</span>
+        </div>
+        <div style="margin-top:24px;padding:16px 18px;background:var(--page);border:0.5px solid var(--border);border-radius:6px">
+          <p style="font-family:var(--mono);font-size:9px;color:var(--faint);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">Aeronautics Club — Founder & President</p>
+          <p style="font-size:12px;color:var(--muted);line-height:1.65">Founded and led a 3-year aeronautics organization focused on aircraft design, RC flight, electronics, and hands-on engineering. Aug. 2022 — Aug. 2025.</p>
+        </div>
+        <div style="margin-top:16px">
+          <p class="eyebrow" style="margin-bottom:12px">Other projects</p>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="background:var(--page);border:0.5px solid var(--border);border-radius:6px;padding:14px 16px">
+              <p style="font-family:var(--mono);font-size:9px;color:var(--blue);letter-spacing:0.06em;margin-bottom:4px">RC AIRCRAFT DESIGN</p>
+              <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px">RC Aircraft Design & Flight Control Systems</p>
+              <p style="font-size:12px;color:var(--muted);line-height:1.55">Foam-board construction, ArduPilot and INAV configuration, multi-system avionics integration, iterative flight testing. 2020–present.</p>
+            </div>
+            <div style="background:var(--page);border:0.5px solid var(--border);border-radius:6px;padding:14px 16px">
+              <p style="font-family:var(--mono);font-size:9px;color:var(--blue);letter-spacing:0.06em;margin-bottom:4px">FPV AIRCRAFT</p>
+              <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px">FPV Aircraft & Embedded Electronics</p>
+              <p style="font-size:12px;color:var(--muted);line-height:1.55">1,200mm LW-PLA fixed-wing, DJI O4 integration, F405 FC, Li-ion and LiPo system design, hardware debugging. 2020–present.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="eyebrow">Research interests</p>
+        <div style="margin-bottom:14px" id="interests"></div>
+        <p style="font-family:var(--mono);font-size:9px;color:var(--faint);letter-spacing:0.06em">areas I want to pursue — not current research positions</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div style="background:#0B2545;padding:64px 40px;text-align:center">
+  <p style="font-family:var(--mono);font-size:9px;color:var(--blue);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:12px">Interested in the project?</p>
+  <h2 style="font-size:26px;font-weight:400;color:#fff;margin-bottom:10px">Let's talk</h2>
+  <p style="font-size:14px;color:#9CA3AF;max-width:460px;margin:0 auto 28px">Whether your work involves autonomous aircraft, aerospace systems, robotics, perception, or experimental flight — I am interested in contributing to research in these areas.</p>
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+    <button class="btn-p">Email</button>
+    <button style="background:transparent;color:#9CA3AF;border:0.5px solid #21262D;border-radius:6px;padding:10px 22px;font-size:13px;cursor:pointer">GitHub</button>
+    <button style="background:transparent;color:#9CA3AF;border:0.5px solid #21262D;border-radius:6px;padding:10px 22px;font-size:13px;cursor:pointer">Download resume</button>
+  </div>
+  <p style="font-family:var(--mono);font-size:9px;color:#374151;margin-top:44px;letter-spacing:0.06em">hamza fayed · aerospace engineering · las positas community college · 2026</p>
+</div>
+
+<script>
+const specStrip=[
+  {val:"1.34 m",label:"Design wingspan",note:"design target"},
+  {val:"2.0–2.3 kg",label:"Est. MTOW",note:"design target"},
+  {val:"0°–95°",label:"Intended tilt",note:"concept"},
+  {val:"8-state",label:"Mission arch.",note:"implemented"},
+  {val:"Python / C++",label:"Autonomy",note:"active development"},
+  {val:"YOLOv11n",label:"Perception",note:"active development"},
+  {val:"SITL",label:"Simulation",note:"validated"},
+];
+const ssEl=document.getElementById('specstrip');
+specStrip.forEach(s=>{
+  const d=document.createElement('div');
+  d.style.cssText='flex-shrink:0;padding-right:32px;border-right:0.5px solid var(--border);display:flex;flex-direction:column;gap:2px';
+  d.innerHTML=`<span style="font-family:var(--mono);font-size:16px;color:var(--text);font-weight:500">${s.val}</span><span style="font-family:var(--mono);font-size:9px;color:var(--faint);letter-spacing:0.1em;text-transform:uppercase">${s.label}</span><span style="font-family:var(--mono);font-size:8px;color:#C8C6C0;letter-spacing:0.06em">${s.note}</span>`;
+  ssEl.appendChild(d);
+});
+
+const glanceData=[
+  {k:"Aircraft",v:"Twin tiltrotor VTOL concept",s:"concept",sc:"#C9A227"},
+  {k:"Flight stack",v:"ArduPilot QuadPlane",s:"SITL validated",sc:"#1B6B93"},
+  {k:"Autonomy",v:"Python / C++ / MAVSDK",s:"implemented",sc:"#1B6B93"},
+  {k:"Companion",v:"Raspberry Pi 5",s:"planned",sc:"#C9A227"},
+  {k:"AI accelerator",v:"Hailo-8",s:"planned",sc:"#C9A227"},
+  {k:"Perception",v:"YOLOv11n",s:"active dev",sc:"#1B6B93"},
+  {k:"Sensing",v:"RGB + FLIR Lepton 3.5",s:"planned",sc:"#C9A227"},
+  {k:"Simulation",v:"ArduPilot SITL",s:"validated",sc:"#22C55E"},
+  {k:"Mission",v:"Maritime SAR",s:"arch. done",sc:"#1B6B93"},
+];
+const gEl=document.getElementById('glance');
+glanceData.forEach(g=>{
+  const d=document.createElement('div');
+  d.className='gi';
+  d.innerHTML=`<div class="gi-k">${g.k}</div><div class="gi-v">${g.v}</div><div class="gi-s" style="color:${g.sc}">${g.s}</div>`;
+  gEl.appendChild(d);
+});
+
+const statusData=[
+  {name:"Autonomy software",badge:"active development",col:"#1B6B93",s:"active"},
+  {name:"Mission architecture",badge:"implemented",col:"#1B6B93",s:"done"},
+  {name:"Perception pipeline",badge:"active development",col:"#1B6B93",s:"active"},
+  {name:"SITL validation",badge:"validated",col:"#22C55E",s:"done"},
+  {name:"System requirements",badge:"in progress",col:"#C9A227",s:"progress"},
+  {name:"Airframe CAD",badge:"upcoming",col:"#9A9A96",s:"upcoming"},
+  {name:"Mechanical prototype",badge:"future",col:"#5C5C5A",s:"future"},
+  {name:"Ground testing",badge:"future",col:"#5C5C5A",s:"future"},
+  {name:"Flight testing",badge:"future",col:"#5C5C5A",s:"future"},
+];
+const dc={active:"#1B6B93",done:"#1B6B93",progress:"#C9A227",upcoming:"#9A9A96",future:"#3A3A38"};
+const sgEl=document.getElementById('statusgrid');
+statusData.forEach(s=>{
+  const d=document.createElement('div');
+  d.className='si';
+  d.style.opacity=s.s==='future'?'0.4':'1';
+  d.innerHTML=`<span class="si-dot" style="background:${dc[s.s]}"></span><span class="si-name" style="color:${s.s==='future'?'var(--faint)':'var(--text)'}">${s.name}</span><span class="si-badge" style="color:${s.col}">${s.badge}</span>`;
+  sgEl.appendChild(d);
+});
+
+const buildData=[
+  {area:"Autonomy",title:"Mission execution",detail:"8-state mission brain, MAVSDK integration",active:true},
+  {area:"Perception",title:"Detection & localization",detail:"YOLOv11n training, geolocation pipeline",active:true},
+  {area:"Simulation",title:"SITL validation",detail:"End-to-end ArduPilot QuadPlane SITL",active:true},
+  {area:"Aircraft",title:"System requirements",detail:"Initial tiltrotor configuration, propulsion sizing",active:false},
+];
+const bEl=document.getElementById('building');
+buildData.forEach(b=>{
+  const d=document.createElement('div');
+  d.style.cssText='background:#161B22;border:0.5px solid #21262D;border-radius:8px;padding:18px';
+  const dotCol=b.active?'#22C55E':'#C9A227';
+  const labelCol=b.active?'#1B6B93':'#C9A227';
+  d.innerHTML=`<div style="width:7px;height:7px;border-radius:50%;background:${dotCol};margin-bottom:14px"></div><div style="font-family:var(--mono);font-size:9px;color:${labelCol};letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">${b.area}</div><div style="font-size:13px;font-weight:500;color:#fff;margin-bottom:5px">${b.title}</div><div style="font-size:11px;color:#6B7280;line-height:1.5">${b.detail}</div>`;
+  bEl.appendChild(d);
+});
+
+const logData=[
+  {id:"DEV-001",title:"Autonomous mission state machine",obj:"Validate mission-state architecture for autonomous maritime SAR.",approach:"Eight-state mission brain in Python and C++ using MAVSDK, interfacing with ArduPilot QuadPlane via MAVLink.",result:"End-to-end mission workflow validated in ArduPilot QuadPlane SITL. All eight state transitions confirmed.",status:"VALIDATED IN SIMULATION",sc:"#22C55E",sb:"#0A2510"},
+  {id:"DEV-002",title:"Victim drift prediction",obj:"Estimate victim movement during transit time between dispatch and UAV arrival.",approach:"Leeway drift model: wind fraction coefficient applied to wind vector plus surface current over transit time.",result:"Drift model implemented and integrated into mission dispatch. Victim-position estimate computed before transit begins.",status:"IMPLEMENTED",sc:"#1B6B93",sb:"#0D1E30"},
+  {id:"DEV-003",title:"Person-in-water detection pipeline",obj:"Detect a person in open water from a UAV-mounted camera with low false positive rate.",approach:"YOLOv11n trained on SeaDronesSee maritime SAR dataset (8,930 images). 4-frame persistence filter applied post-inference.",result:"Detection model trained. Persistence filter implemented. Integration with GPS geolocation pipeline in progress.",status:"IN DEVELOPMENT",sc:"#C9A227",sb:"#2A1F0A"},
+  {id:"DEV-004",title:"VTOL transition sequencing",obj:"Reliable multi-mode flight: hover for precision operations, fixed-wing for efficient cruise.",approach:"ArduPilot QuadPlane bicopter firmware with explicit MAVSDK transition commands and Q_GUIDED_MODE parameter.",result:"Transitions validated in SITL. GUIDED mode loiter bug resolved. Correct absolute-altitude GOTO commands confirmed.",status:"DEBUGGED IN SITL",sc:"#1B6B93",sb:"#0D1E30"},
+  {id:"DEV-005",title:"Tiltrotor mechanical concept",obj:"Servo-driven rotor tilt for VTOL-to-cruise transition with adequate torque margin.",approach:"3:1 herringbone gear reduction (module 1.5, Delrin sector gear) on 270 deg servo. Integral hard stops in sector teeth.",result:"Design concept developed. Onshape model in progress. Physical prototype is a future phase.",status:"IN DESIGN",sc:"#9A9A96",sb:"#1C1C1A"},
+];
+const dlEl=document.getElementById('devlog');
+logData.forEach(e=>{
+  const d=document.createElement('div');
+  d.className='log-entry';
+  d.innerHTML=`<div class="le-header"><span class="le-id">${e.id}</span><span class="le-title">${e.title}</span><span class="le-status" style="color:${e.sc};background:${e.sb};border:0.5px solid ${e.sc}">${e.status}</span></div><div class="le-body"><div class="le-cell"><div class="le-label">Objective</div><div class="le-text">${e.obj}</div></div><div class="le-cell"><div class="le-label">Approach</div><div class="le-text">${e.approach}</div></div><div class="le-cell"><div class="le-label">Result / Current state</div><div class="le-text">${e.result}</div></div></div>`;
+  dlEl.appendChild(d);
+});
+
+const stateData=[
+  {n:"01",name:"Dispatch",desc:"Distress signal received",pur:"Receive and process distress signal, compute drift-corrected predicted victim position.",inp:"GPS coordinates, wind speed/direction, current data, dispatch timestamp",dec:"Leeway drift model applied over transit time to compute predicted victim GPS",out:"Transit waypoint, search radius, updated wind estimate"},
+  {n:"02",name:"Transit",desc:"Drift-corrected cruise",pur:"Fixed-wing cruise to predicted victim area, drift model updated continuously.",inp:"Predicted position, real-time wind, battery level",dec:"Monitor for early detection — positive detection triggers direct approach",out:"Arrival at predicted search centre, updated drift estimate"},
+  {n:"03",name:"Search",desc:"IAMSAR pattern",pur:"Systematic area coverage to locate victim using IAMSAR-compliant lawnmower pattern.",inp:"Search centre GPS, search radius, sensor coverage width",dec:"Each waypoint: run detection pipeline. Positive detection triggers approach.",out:"Victim detection event with pixel location"},
+  {n:"04",name:"Detection",desc:"YOLOv11n + persistence",pur:"Validate person-in-water detection, eliminating transient false positives.",inp:"Camera frame, YOLOv11n confidence, frame history buffer",dec:"4 consecutive frames required above threshold before validation",out:"Validated detection with GPS geolocation"},
+  {n:"05",name:"Approach",desc:"Navigate to victim",pur:"Transition to multicopter hover mode, navigate to victim GPS position.",inp:"Victim GPS, ArduPilot telemetry, hover altitude target",dec:"VTOL transition commanded, MAVSDK GUIDED mode navigation",out:"Stable hover above victim within delivery radius"},
+  {n:"06",name:"Delivery",desc:"Payload release",pur:"Release flotation payload. Requires supervisor confirmation.",inp:"Hover stability confirmation, supervisor HTTP confirm",dec:"Stable hover plus supervisor confirm triggers servo release",out:"Payload deployed, transition to monitoring"},
+  {n:"07",name:"Monitoring",desc:"Post-drop observation",pur:"Hold position above victim, track position for incoming rescue.",inp:"Camera feed, victim position, rescue vessel status",dec:"Supervisor confirms rescue vessel arrival — return authorised",out:"Handoff confirmed, return initiated"},
+  {n:"08",name:"Return",desc:"Return to base",pur:"Return to launch point in fixed-wing cruise, VTOL landing sequence.",inp:"Home coordinates, battery level, wind data",dec:"Fixed-wing transit, VTOL transition at home perimeter",out:"Safe landing at launch point, mission log written"},
+];
+const sEl=document.getElementById('states');
+stateData.forEach((s,i)=>{
+  const row=document.createElement('div');
+  row.className='state-row';
+  row.innerHTML=`<div class="state-left"><div class="state-n" id="sn${i}">${s.n}</div>${i<stateData.length-1?'<div class="state-vline"></div>':''}</div><div class="state-card" id="sc${i}"><div class="sc-head"><div><div class="sc-name">${s.name}</div><div class="sc-desc">${s.desc}</div></div><span class="sc-chev">v</span></div><div class="sc-detail" id="sd${i}"><div class="scd-block"><div class="scd-k">Purpose</div><div class="scd-v">${s.pur}</div></div><div class="scd-block"><div class="scd-k">Inputs</div><div class="scd-v">${s.inp}</div></div><div class="scd-block"><div class="scd-k">Decision</div><div class="scd-v">${s.dec}</div></div><div class="scd-block"><div class="scd-k">Output</div><div class="scd-v">${s.out}</div></div></div></div>`;
+  sEl.appendChild(row);
+  document.getElementById('sc'+i).addEventListener('click',()=>{
+    const o=document.getElementById('sc'+i).classList.contains('open');
+    document.querySelectorAll('.state-card.open').forEach(c=>c.classList.remove('open'));
+    document.querySelectorAll('.state-n.open').forEach(c=>c.classList.remove('open'));
+    if(!o){document.getElementById('sc'+i).classList.add('open');document.getElementById('sn'+i).classList.add('open');}
+  });
+});
+
+const pipeData=[
+  {t:"Optical + thermal input",s:"RGB camera + FLIR Lepton 3.5"},
+  {t:"YOLOv11n inference",s:"SeaDronesSee — 8,930 training images"},
+  {t:"Person-in-water detection",s:"Confidence threshold check"},
+  {t:"4-frame persistence filter",s:"Consecutive frames required",hl:true},
+  {t:"Pixel location",s:"Bounding box centre coordinates"},
+  {t:"Camera intrinsics + geometry",s:"Projection to ground plane"},
+  {t:"Live ArduPilot telemetry",s:"Attitude + altitude + position"},
+  {t:"Geographic location estimate",s:"GPS coordinate of detection"},
+  {t:"Mission response",s:"Approach waypoint issued via MAVSDK"},
+];
+const pEl=document.getElementById('pipeline');
+pipeData.forEach((p,i)=>{
+  const r=document.createElement('div');
+  r.className='pipe-step';
+  r.innerHTML=`<div class="pipe-left"><div class="pipe-dot">${String(i+1).padStart(2,'0')}</div>${i<pipeData.length-1?'<div class="pipe-vline"></div>':''}</div><div class="pipe-card${p.hl?' hl':''}"><div class="pc-title">${p.t}</div><div class="pc-sub">${p.s}</div></div>`;
+  pEl.appendChild(r);
+});
+
+const vrData=[
+  {id:"VAL-001",title:"Full mission workflow",env:"ArduPilot QuadPlane SITL",scope:"Complete 8-state autonomous mission",method:"State machine validation, dispatch, drift correction, search, delivery, return",status:"VALIDATED IN SIMULATION",warn:false,asset:"SITL screenshot — coming soon"},
+  {id:"VAL-002",title:"VTOL transition sequencing",env:"ArduPilot QuadPlane SITL",scope:"Hover to fixed-wing to hover transitions",method:"MAVSDK tilt commands, Q_GUIDED_MODE parameter, altitude-absolute GOTO",status:"VALIDATED IN SITL",warn:false,asset:"Telemetry log — coming soon"},
+  {id:"VAL-003",title:"Person-in-water detection model",env:"SeaDronesSee test set",scope:"YOLOv11n performance on maritime SAR imagery",method:"Model training on 8,930 images. Persistence filter integration.",status:"IN PROGRESS",warn:true,asset:"Detection results — in progress"},
+];
+const vrEl=document.getElementById('valreports');
+vrData.forEach(v=>{
+  const col=v.warn?'#C9A227':'#22C55E';
+  const bg=v.warn?'#2A1F0A':'#0A2510';
+  const d=document.createElement('div');
+  d.style.cssText='border:0.5px solid #21262D;border-radius:8px;overflow:hidden;background:#161B22;margin-bottom:12px';
+  d.innerHTML=`<div style="background:#0D1117;border-bottom:0.5px solid #21262D;padding:14px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap"><span style="font-family:var(--mono);font-size:10px;color:var(--blue);letter-spacing:0.08em">${v.id}</span><span style="font-size:14px;font-weight:500;color:#fff">${v.title}</span><span style="font-family:var(--mono);font-size:9px;padding:3px 9px;border-radius:3px;letter-spacing:0.06em;margin-left:auto;background:${bg};color:${col};border:0.5px solid ${col}">${v.status}</span></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr"><div style="padding:14px 20px;border-right:0.5px solid #21262D"><div style="font-family:var(--mono);font-size:9px;color:#6B7280;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Environment</div><div style="font-size:12px;color:#D1D5DB;line-height:1.5">${v.env}</div></div><div style="padding:14px 20px;border-right:0.5px solid #21262D"><div style="font-family:var(--mono);font-size:9px;color:#6B7280;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Scope</div><div style="font-size:12px;color:#D1D5DB;line-height:1.5">${v.scope}</div></div><div style="padding:14px 20px"><div style="font-family:var(--mono);font-size:9px;color:#6B7280;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Method</div><div style="font-size:12px;color:#D1D5DB;line-height:1.5">${v.method}</div></div></div><div style="margin:0 20px 20px;border:0.5px solid #21262D;border-radius:6px;height:60px;display:flex;align-items:center;justify-content:center;background:#0D1117"><span style="font-family:var(--mono);font-size:10px;color:#374151;letter-spacing:0.06em;text-transform:uppercase">${v.asset}</span></div>`;
+  vrEl.appendChild(d);
+});
+
+const acSpecData=[
+  ["Configuration","Twin tiltrotor VTOL — V-22-inspired",""],
+  ["Wingspan","~1,340 mm","design target"],
+  ["MTOW","~2.0–2.3 kg","design target"],
+  ["Endurance","15–20 min on 4S LiPo","estimate"],
+  ["Tilt authority","0–95 deg","concept"],
+  ["Motors","T-Motor MN3110 780KV",""],
+  ["Propellers","12-inch counter-rotating",""],
+  ["Construction","LW-PLA / PETG + carbon-fibre spars",""],
+  ["Tilt mechanism","3:1 herringbone, module 1.5, Delrin",""],
+];
+const asEl=document.getElementById('aircraftspecs');
+acSpecData.forEach(([k,v,note])=>{
+  const r=document.createElement('div');
+  r.className='spec-row';
+  r.innerHTML=`<span class="spec-key">${k}</span><div style="text-align:right"><span class="spec-val">${v}</span>${note?`<br><span style="font-family:var(--mono);font-size:9px;color:var(--amber);letter-spacing:0.06em">${note}</span>`:''}</div>`;
+  asEl.appendChild(r);
+});
+
+const chalData=[
+  {prob:"Autonomous state management",approach:"8-state FSM with explicit transition guards, battery monitoring, comms-loss autonomy",status:"implemented",col:"#1B6B93"},
+  {prob:"Maritime victim drift",approach:"Leeway drift model: wind fraction applied over transit time to predict victim position",status:"implemented",col:"#1B6B93"},
+  {prob:"False positive detections",approach:"4-frame persistence filter — N consecutive frames required before victim confirmation",status:"implemented",col:"#1B6B93"},
+  {prob:"Image-based geolocation",approach:"Camera intrinsic matrix + ArduPilot attitude telemetry — ray-cast to ground plane",status:"in development",col:"#C9A227"},
+  {prob:"Sensor integration",approach:"FLIR Lepton 3.5 + optical camera — dual-stream detection pipeline on Hailo-8",status:"planned",col:"#9A9A96"},
+  {prob:"Multi-mode aircraft architecture",approach:"ArduPilot QuadPlane bicopter config with explicit MAVSDK VTOL transition commands",status:"validated in SITL",col:"#1B6B93"},
+];
+const chEl=document.getElementById('challenges');
+chalData.forEach((c,i)=>{
+  const d=document.createElement('div');
+  d.className='chal-entry';
+  d.innerHTML=`<div class="chal-num">0${i+1}</div><div style="flex:1"><div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:10px">${c.prob}</div><div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center"><div style="background:var(--page);border:0.5px solid var(--border);border-radius:6px;padding:10px 12px"><div style="font-family:var(--mono);font-size:9px;color:var(--blue);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">Approach</div><div style="font-size:12px;color:var(--muted);line-height:1.5">${c.approach}</div></div><span style="font-family:var(--mono);font-size:9px;color:${c.col};border:0.5px solid ${c.col};border-radius:3px;padding:4px 9px;letter-spacing:0.06em;white-space:nowrap">${c.status}</span></div></div>`;
+  chEl.appendChild(d);
+});
+
+const rmData=[
+  {n:"01",name:"Mission definition",s:"done"},{n:"02",name:"Autonomy architecture",s:"done"},
+  {n:"03",name:"Perception pipeline",s:"active"},{n:"04",name:"SITL validation",s:"done"},
+  {n:"05",name:"System requirements",s:"active"},{n:"06",name:"Airframe CAD",s:"upcoming"},
+  {n:"07",name:"Mechanical prototype",s:"future"},{n:"08",name:"Ground testing",s:"future"},
+  {n:"09",name:"Flight testing",s:"future"},{n:"10",name:"Autonomous flight validation",s:"future"},
+];
+const rmC={done:"#1B6B93",active:"#1B6B93",upcoming:"#C9A227",future:"#5C5C5A"};
+const rmBg={done:"#EEF5FA",active:"#EEF5FA",upcoming:"rgba(201,162,39,0.1)",future:"transparent"};
+const rmEl=document.getElementById('roadmap');
+rmData.forEach(r=>{
+  const d=document.createElement('div');
+  d.className='rm-item';
+  d.style.opacity=r.s==='future'?'0.4':'1';
+  d.innerHTML=`<span class="rm-n" style="color:${rmC[r.s]}">${r.n}</span><span class="rm-name" style="color:${r.s==='future'?'var(--faint)':'var(--text)'}">${r.name}</span><span class="rm-badge" style="color:${rmC[r.s]};background:${rmBg[r.s]}">${r.s}</span>`;
+  rmEl.appendChild(d);
+});
+
+const interests=["Autonomous aerial systems","VTOL / tiltrotor aircraft","Computer vision for aerial robotics","UAV dynamics and control","State estimation and navigation","Search and rescue robotics","Embedded AI systems","Aircraft systems integration"];
+const iEl=document.getElementById('interests');
+interests.forEach(t=>{
+  const d=document.createElement('div');
+  d.className='i-row';
+  d.innerHTML=`<span class="i-dot"></span><span class="i-text">${t}</span>`;
+  iEl.appendChild(d);
+});
+
+document.querySelectorAll('.n-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.n-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const t=document.getElementById('sec-'+btn.dataset.s);
+    if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+</script>
+</body>
+</html>
